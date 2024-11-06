@@ -14,4 +14,10 @@ class MyAccelerator(implicit p: Parameters) extends AcceleratorCore {
   io.req.ready := io.resp.ready
   io.resp.valid := io.req.valid
   io.resp.bits.result := io.req.bits.a + io.req.bits.b
+
+  val q = getReaderModule("a")
+  q.requestChannel.valid := false.B
+  q.requestChannel.bits := DontCare
+
+  q.dataChannel.data.ready := false.B
 }

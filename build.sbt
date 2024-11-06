@@ -12,7 +12,7 @@ lazy val prose = {
       name := "project-name",
       libraryDependencies ++= Seq(
         "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-        "edu.duke.cs.apex" %% "beethoven-hardware" % "0.0.0"
+        "edu.duke.cs.apex" %% "beethoven-hardware" % "0.0.3"
       ),
       resolvers += ("reposilite-repository-releases" at "http://oak.cs.duke.edu:8080/releases").withAllowInsecureProtocol(true),
       addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
