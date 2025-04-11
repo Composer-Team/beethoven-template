@@ -14,7 +14,7 @@ lazy val prose = {
         "edu.berkeley.cs" %% "chisel3" % chiselVersion,
         "edu.duke.cs.apex" %% "beethoven-hardware" % "0.0.16"
       ),
-      resolvers += ("reposilite-repository-releases" at "http://oak.cs.duke.edu:8080/releases").withAllowInsecureProtocol(true),
+      resolvers += ("reposilite-repository-releases" at "http://54.165.244.214:8080/releases").withAllowInsecureProtocol(true),
       addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
     )
 }
