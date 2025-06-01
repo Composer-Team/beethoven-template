@@ -1,6 +1,9 @@
 import chisel3._
 import chisel3.util._
 
+import beethoven._
+import beethoven.MemoryStreams._
+
 //noinspection TypeAnnotation, ScalaWeakerAccess
 class VectorAdd extends Module {
   val io = IO(new Bundle {

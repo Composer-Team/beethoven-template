@@ -24,6 +24,6 @@ int main() {
                                              vec_b,
                                              vec_out,
                                              n_eles);
-  auto response = resp_handle.get()
+  auto response = resp_handle.get();
   handle.copy_from_fpga(vec_out);
 }

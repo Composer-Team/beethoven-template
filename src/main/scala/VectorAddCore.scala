@@ -53,6 +53,7 @@ class VectorAddCore()(implicit p: Parameters) extends AcceleratorCore {
   val s_idle :: s_working :: s_finish :: Nil =  Enum(3)
   val state = RegInit(s_idle)
 
+
   when (state === s_idle) {
     my_io.req.ready := vec_a_reader.requestChannel.ready &&
       vec_b_reader.requestChannel.ready &&
