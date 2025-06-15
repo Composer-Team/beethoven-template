@@ -1,5 +1,5 @@
-import beethoven.Platforms.FPGA.Xilinx.F2.AWSF2Platform
 import beethoven._
+import beethoven.Platforms.FPGA.Xilinx.AWS.AWSF2Platform
 
 class VectorAddConfig extends AcceleratorConfig(
   AcceleratorSystemConfig(
