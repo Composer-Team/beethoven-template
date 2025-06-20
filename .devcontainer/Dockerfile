@@ -1,7 +1,8 @@
 FROM ubuntu:22.04
 RUN apt-get update
-RUN apt-get install -y git gcc g++ cmake openjdk-17-jdk-headless vim automake binutils autoconf
-RUN apt-get install -y gperf autoconf flex bison
+RUN apt-get install -y git gcc g++ cmake openjdk-17-jdk-headless  \
+                        vim automake binutils autoconf python3.11 \
+                        gperf autoconf flex bison rsync
 RUN git clone https://github.com/Composer-Team/Beethoven-Software && \
     cd Beethoven-Software && \
     make install_swlib SUDO= 
@@ -20,4 +21,12 @@ RUN cd iverilog && \
     make install
 
 RUN adduser beethoven
+COPY aws/* /home/beethoven/.ssh/
+COPY aws ~/.ssh
+RUN chown beethoven:beethoven /home/beethoven/.ssh/id_ed25519
+RUN chown beethoven:beethoven /home/beethoven/.ssh/id_ed25519.pub
+RUN chown beethoven:beethoven /home/beethoven/.ssh
+
+# RUN apt-get install procmail
 USER beethoven
+

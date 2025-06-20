@@ -1,0 +1,10 @@
+#!/usr/bin/python3.11
+import os
+
+testbench_files = ["main.cc", "CMakeLists.txt"]
+# ISCA PEOPLE: Provide username and IP address here
+username = "isca1"
+ip_address = "54.82.243.99"
+
+for f in testbench_files:
+    os.system(f"rsync {f} {username}@{ip_address}:~/tb/")
