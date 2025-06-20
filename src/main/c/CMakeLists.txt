@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.15)
-project(vector_add)
+project(testbenches)
 
 find_package(beethoven REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 
-beethoven_build(vector_add
-    SOURCES main.cc)
+beethoven_build(vector_tb SOURCES vector_tb.cc)
+
+beethoven_build(fir_tb SOURCES fir_tb.cc)
 
 # Option to enable/disable Python bindings
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)

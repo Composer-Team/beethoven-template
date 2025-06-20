@@ -13,3 +13,5 @@ SRs
 target
 hw_build
 src/main/c/build
+sed_script.sed
+src/main/c/Beethoven-Software

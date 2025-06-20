@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 RUN apt-get update
-RUN apt-get install -y git gcc g++ cmake openjdk-17-jdk-headless  \
+RUN apt-get install -y git g++ gcc cmake openjdk-17-jdk-headless  \
                         vim automake binutils autoconf python3.11 \
                         gperf autoconf flex bison rsync
 RUN git clone https://github.com/Composer-Team/Beethoven-Software && \

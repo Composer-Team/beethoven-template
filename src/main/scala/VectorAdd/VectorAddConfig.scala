@@ -1,3 +1,6 @@
+package VectorAdd
+
+
 import beethoven._
 import beethoven.Platforms.FPGA.Xilinx.AWS.AWSF2Platform
 import beethoven.Platforms.FPGA.Xilinx.AWS.DMAHelperConfig
