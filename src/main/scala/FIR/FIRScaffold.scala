@@ -10,6 +10,7 @@ import beethoven.Platforms.FPGA.Xilinx.AWS.AWSF2Platform
 import beethoven.Platforms.FPGA.Xilinx.AWS.DMAHelper
 import beethoven.Platforms.FPGA.Xilinx.AWS.DMAHelperConfig
 import beethoven.Generation.CppGeneration
+/*
 
 // FIR Filter:
 // The FIR takes in a stream of data (Input) and applies a convolution
@@ -245,3 +246,4 @@ object FirFilterScaffoldBuild extends BeethovenBuild(
     // When it's time to deploy our accelerator, set this to BuildMode.Synthesis
     buildMode =  BuildMode.Simulation
 )
+*/
