@@ -93,7 +93,7 @@ class FirFilterSolutionConfig(windowSize: Int) extends AcceleratorConfig(
     List(AcceleratorSystemConfig(
         nCores = 3,
         name = "FIR",
-        moduleConstructor = ModuleBuilder(p => new FirFilterSOLUTION(windowSize)(p)),
+        moduleConstructor = ModuleBuilder(p => new FirFilterSolution(windowSize)(p)),
         memoryChannelConfig = List(
             ReadChannelConfig("input_stream", dataBytes = 4),
             WriteChannelConfig("output_stream", dataBytes = 4)
