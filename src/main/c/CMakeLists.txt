@@ -6,3 +6,19 @@ set(CMAKE_CXX_STANDARD 17)
 
 beethoven_build(vector_add
     SOURCES main.cc)
+
+# Option to enable/disable Python bindings
+option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)
+
+if(BUILD_PYTHON_BINDINGS)
+    find_package(pybind11 REQUIRED)
+    message(STATUS "Building Python bindings")
+    # Python binding module
+    pybind11_add_module(beethoven_python 
+        python_bindings.cpp
+    )
+    
+    link_beethoven_to_target(beethoven_python)
+else()
+    message(STATUS "Python bindings disabled")
+endif()
