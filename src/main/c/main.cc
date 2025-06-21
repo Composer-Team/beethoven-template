@@ -48,13 +48,7 @@ int main() {
     printf("Input vector and matrix copied to FPGA.\n");
     
     // Call the accelerator
-    auto resp_handle = myVectorMatMul::vector_mat_mul(0,
-                                                      num_cols,
-                                                      mat_in,
-                                                      vec_in,
-                                                      vec_out,
-                                                      vector_length);
-
+    auto resp_handle = // [Your turn] Please fill in this part.
     printf("Accelerator called, waiting for response...\n");
     
     // Wait for completion
@@ -63,7 +57,7 @@ int main() {
     printf("Response received: %s\n", response ? "Success" : "Failure");
     
     // Copy result back from FPGA
-    handle.copy_from_fpga(vec_out);
+    // [Your turn] Please fill in this part.
     
     // Print results (optional)
     std::cout << "Results:" << std::endl;
