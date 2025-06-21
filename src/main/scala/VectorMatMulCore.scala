@@ -92,6 +92,7 @@ class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
     }
 
     is(s_compute) {
+      vec_sp.dataChannels(0).req.valid := true.B
       mat_reader.requestChannel.valid := true.B
       when(mat_reader.dataChannel.data.valid){
         dut.io.vec_b.valid := true.B
