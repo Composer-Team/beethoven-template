@@ -3,9 +3,10 @@ import chisel3.util._
 import beethoven._
 import beethoven.common._
 import chipsalliance.rocketchip.config.Parameters
+import beethoven.Generation.CppGeneration
 
 //noinspection TypeAnnotation,ScalaWeakerAccess
-class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
+class VectorMatMulCore(N: Int, dataWidth: Int)(implicit p: Parameters) extends AcceleratorCore {
   val my_io = BeethovenIO(new AccelCommand("vector_mat_mul") {
     val vec_in_addr = Address()
     val mat_in_addr = Address()
@@ -26,7 +27,7 @@ class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
   val state = RegInit(s_idle)
 
 
-  val vec_length_bytes = my_io.req.bits.vector_length * 4.U
+  val vec_length_bytes = my_io.req.bits.vector_length * (dataWidth / 8).U
   val row_index = RegInit(0.U(32.W))
   val col_index = RegInit(0.U(32.W))
 
@@ -39,7 +40,7 @@ class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
 
 
   // DUT
-  val dut = Module(new VectorDot())
+  val dut = Module(new VectorDot(dataWidth))
   dut.io.vec_out.ready := false.B
 
 
@@ -57,9 +58,8 @@ class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
   mat_reader.requestChannel.bits.len := vec_length_bytes
 
   out_writer.requestChannel.valid := false.B
-  out_writer.requestChannel.bits.addr := my_io.req.bits.vec_out_addr + col_index * 8.U
-  out_writer.requestChannel.bits.len := my_io.req.bits.cols * 8.U
-
+  out_writer.requestChannel.bits.addr := my_io.req.bits.vec_out_addr + col_index * (2 * dataWidth / 8).U
+  out_writer.requestChannel.bits.len := my_io.req.bits.cols * (2 * dataWidth / 8).U
   dut.io.vec_a <> mat_reader.dataChannel.data  //mat column from mem
    
   dut.io.vec_b.valid := false.B
@@ -121,5 +121,4 @@ class VectorMatMulCore(N: Int)(implicit p: Parameters) extends AcceleratorCore {
       }
     }
   }
-
 }
