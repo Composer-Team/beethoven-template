@@ -2,7 +2,7 @@ FROM ubuntu:22.04
 RUN apt-get update
 RUN apt-get install -y git g++ gcc cmake openjdk-17-jdk-headless  \
                         vim automake binutils autoconf python3.11 \
-                        gperf autoconf flex bison rsync
+                        gperf autoconf flex bison rsync python3-pip
 RUN git clone https://github.com/Composer-Team/Beethoven-Software && \
     cd Beethoven-Software && \
     make install_swlib SUDO= 

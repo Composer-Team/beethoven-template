@@ -28,5 +28,5 @@ class VectorAddConfig extends AcceleratorConfig(
   ))
 
 object VectorAddConfig extends BeethovenBuild(new VectorAddConfig,
-  buildMode = BuildMode.Synthesis,
+  buildMode = BuildMode.Simulation,
   platform = new AWSF2Platform("beethoven-user0"))
