@@ -4,6 +4,9 @@
 
 using namespace beethoven;
 
+using input_type = uint16_t;
+using output_type = uint32_t;
+
 int main() {
     fpga_handle_t handle;
     int size_of_int = 4;
@@ -15,16 +18,16 @@ int main() {
     printf("Vector length: %d, Number of columns: %d\n", vector_length, num_cols);
     
     // Allocate memory
-    auto vec_in = handle.malloc(sizeof(int) * vector_length);
-    auto mat_in = handle.malloc(sizeof(int) * vector_length * num_cols);  // Column-major matrix
-    auto vec_out = handle.malloc(sizeof(uint64_t) * num_cols);  // Output vector
+    auto vec_in = handle.malloc(sizeof(input_type) * vector_length);
+    auto mat_in = handle.malloc(sizeof(input_type) * vector_length * num_cols);  // Column-major matrix
+    auto vec_out = handle.malloc(sizeof(output_type) * num_cols);  // Output vector
 
     printf("Memory allocated.\n");
     
     // Get host pointers
-    auto vec_in_host = (int*)vec_in.getHostAddr();
-    auto mat_in_host = (int*)mat_in.getHostAddr();
-    auto vec_out_host = (uint64_t*)vec_out.getHostAddr();
+    auto vec_in_host = (input_type*)vec_in.getHostAddr();
+    auto mat_in_host = (input_type*)mat_in.getHostAddr();
+    auto vec_out_host = (output_type*)vec_out.getHostAddr();
 
     printf("Host pointers obtained.\n");
     printf("%08x <- vec input\n", vec_in.getFpgaAddr());
