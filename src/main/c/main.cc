@@ -15,18 +15,19 @@ int main() {
     printf("Vector length: %d, Number of columns: %d\n", vector_length, num_cols);
     
     // Allocate memory
-    auto vec_in = handle.malloc(size_of_int * vector_length);
-    auto mat_in = handle.malloc(size_of_int * vector_length * num_cols);  // Column-major matrix
-    auto vec_out = handle.malloc(size_of_int * num_cols);  // Output vector
+    auto vec_in = handle.malloc(sizeof(int) * vector_length);
+    auto mat_in = handle.malloc(sizeof(int) * vector_length * num_cols);  // Column-major matrix
+    auto vec_out = handle.malloc(sizeof(uint64_t) * num_cols);  // Output vector
 
     printf("Memory allocated.\n");
     
     // Get host pointers
     auto vec_in_host = (int*)vec_in.getHostAddr();
     auto mat_in_host = (int*)mat_in.getHostAddr();
-    auto vec_out_host = (int*)vec_out.getHostAddr();
+    auto vec_out_host = (uint64_t*)vec_out.getHostAddr();
 
     printf("Host pointers obtained.\n");
+    printf("%08x <- vec input\n", vec_in.getFpgaAddr());
     
     // Initialize input vector
     for (int i = 0; i < vector_length; ++i) {
@@ -50,8 +51,8 @@ int main() {
     auto resp_handle = myVectorMatMul::vector_mat_mul(0,
                                                       num_cols,
                                                       mat_in,
-                                                      vec_out,
                                                       vec_in,
+                                                      vec_out,
                                                       vector_length);
 
     printf("Accelerator called, waiting for response...\n");

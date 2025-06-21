@@ -1,5 +1,5 @@
-import beethoven.Platforms.FPGA.Xilinx.F2.AWSF2Platform
 import beethoven._
+import beethoven.Platforms.FPGA.Xilinx.AWS.AWSF2Platform
 
 class VectorMatMulConfig(N: Int) extends AcceleratorConfig(
   AcceleratorSystemConfig(
@@ -13,7 +13,7 @@ class VectorMatMulConfig(N: Int) extends AcceleratorConfig(
                             latency = 1,
                             features = ScratchpadFeatures()),
       ReadChannelConfig("mat_in", dataBytes = 4),
-      WriteChannelConfig("vec_out", dataBytes = 4)
+      WriteChannelConfig("vec_out", dataBytes = 8)
     )
   )
 )
