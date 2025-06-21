@@ -8,8 +8,7 @@ beethoven_build(vector_tb SOURCES vector_tb.cc)
 
 beethoven_build(fir_tb SOURCES fir_tb_SOLUTION.cc)
 
-beethoven_build(vector_dot
-    SOURCES main.cc)
+beethoven_build(vector_dot SOURCES main.cc)
 
 # Option to enable/disable Python bindings
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)

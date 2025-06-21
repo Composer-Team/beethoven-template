@@ -3,73 +3,27 @@
 #include <beethoven_hardware.h>
 
 using namespace beethoven;
-
 int main() {
-    fpga_handle_t handle;
-    int size_of_int = 4;
-    
-    // Define problem dimensions
-    int vector_length = 128;  // Must be <= N (128 from your config)
-    int num_cols = 64;        // Number of columns in matrix
+  fpga_handle_t handle;
+  int size_of_int = 4;
+  int n_eles = 32;
+  auto vec_a = handle.malloc(size_of_int * n_eles);
+  auto vec_b = handle.malloc(size_of_int * n_eles);
+  auto vec_out = handle.malloc(size_of_int * n_eles);
 
-    printf("Vector length: %d, Number of columns: %d\n", vector_length, num_cols);
-    
-    // Allocate memory
-    auto vec_in = handle.malloc(sizeof(int) * vector_length);
-    auto mat_in = handle.malloc(sizeof(int) * vector_length * num_cols);  // Column-major matrix
-    auto vec_out = handle.malloc(sizeof(uint64_t) * num_cols);  // Output vector
-
-    printf("Memory allocated.\n");
-    
-    // Get host pointers
-    auto vec_in_host = (int*)vec_in.getHostAddr();
-    auto mat_in_host = (int*)mat_in.getHostAddr();
-    auto vec_out_host = (uint64_t*)vec_out.getHostAddr();
-
-    printf("Host pointers obtained.\n");
-    printf("%08x <- vec input\n", vec_in.getFpgaAddr());
-    
-    // Initialize input vector
-    for (int i = 0; i < vector_length; ++i) {
-        vec_in_host[i] = i + 1;  // Simple test pattern
-    }
-    
-    // Initialize matrix (column-major order)
-    for (int col = 0; col < num_cols; ++col) {
-        for (int row = 0; row < vector_length; ++row) {
-            mat_in_host[col * vector_length + row] = (col + 1) * (row + 1);
-        }
-    }
-    
-    // Copy data to FPGA
-    handle.copy_to_fpga(vec_in);
-    handle.copy_to_fpga(mat_in);
-
-    printf("Input vector and matrix copied to FPGA.\n");
-    
-    // Call the accelerator
-    auto resp_handle = myVectorMatMul::vector_mat_mul(0,
-                                                      num_cols,
-                                                      mat_in,
-                                                      vec_in,
-                                                      vec_out,
-                                                      vector_length);
-
-    printf("Accelerator called, waiting for response...\n");
-    
-    // Wait for completion
-    auto response = resp_handle.get();
-
-    printf("Response received: %s\n", response ? "Success" : "Failure");
-    
-    // Copy result back from FPGA
-    handle.copy_from_fpga(vec_out);
-    
-    // Print results (optional)
-    std::cout << "Results:" << std::endl;
-    for (int i = 0; i < num_cols; ++i) {
-        std::cout << "vec_out[" << i << "] = " << vec_out_host[i] << std::endl;
-    }
-    
-    return 0;
+  auto vec_a_host = (int*)vec_a.getHostAddr();
+  auto vec_b_host = (int*)vec_b.getHostAddr();
+  for (int i = 0; i < n_eles; ++i) {
+      vec_a_host[i] = i + 1;
+      vec_b_host[i] = i * 2;
+  }
+  handle.copy_to_fpga(vec_a);
+  handle.copy_to_fpga(vec_b);
+  auto resp_handle = myVectorAdd::vector_add(0,
+                                             vec_a,
+                                             vec_b,
+                                             vec_out,
+                                             n_eles);
+  auto response = resp_handle.get();
+  handle.copy_from_fpga(vec_out);
 }
