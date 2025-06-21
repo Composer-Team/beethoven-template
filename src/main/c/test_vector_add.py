@@ -6,7 +6,8 @@ try:
     print("✔️ beethoven_python module imported successfully")
 except ImportError as e:
     print(f"❌ Failed to import beethoven_python: {e}")
-    print("Make sure the .so file is in your current directory or PYTHONPATH")
+    print("Make sure the .so file is in your current directory or " +
+            "PYTHONPATH OR that /usr/local/lib is in LD_LIBRARY_PATH")
     exit(1)
 
 def test_basic_functionality():

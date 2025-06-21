@@ -101,7 +101,7 @@ class FirFilterSolutionConfig(windowSize: Int) extends AcceleratorConfig(
         ))
 
 object FirFilterSolutionBuild extends BeethovenBuild(
-    new FirFilterSolutionConfig(16),
+    new FirFilterSolutionConfig(4),
     platform = new AWSF2Platform(),
-    buildMode =  BuildMode.Simulation
+    buildMode =  BuildMode.Synthesis
 )
