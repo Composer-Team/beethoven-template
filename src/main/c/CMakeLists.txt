@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 beethoven_build(vector_tb SOURCES vector_tb.cc)
 
-beethoven_build(fir_tb SOURCES fir_tb.cc)
+beethoven_build(fir_tb SOURCES fir_tb_SOLUTION.cc)
 
 # Option to enable/disable Python bindings
 option(BUILD_PYTHON_BINDINGS "Build Python bindings" OFF)

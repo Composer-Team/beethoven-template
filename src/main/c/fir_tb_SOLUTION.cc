@@ -10,7 +10,7 @@ void dma_workaround_copy_to_fpga(remote_ptr &q) {
     int sz = q.getLen() / 4;
     auto * intar = (int*)q.getHostAddr();
     for (int i = 0; i < sz; ++i) {
-        printf("\rProgress: %d/%d", i, sz);
+        printf("\rProgress: %d/%d", i, sz); fflush(stdout);
         auto ptr = q + i * 4;
         DMAHelper::memcmd(0, q + i * 4, intar[i], 1).get();
     }
@@ -21,7 +21,7 @@ void dma_workaround_copy_from_fpga(remote_ptr &q) {
     int sz = q.getLen() / 4;
     auto * intar = (int*)q.getHostAddr();
     for (int i = 0; i < sz; ++i) {
-        printf("\rProgress: %d/%d", i, sz);
+        printf("\rProgress: %d/%d", i, sz); fflush(stdout);
         auto ptr = q + i * 4;
         auto resp = DMAHelper::memcmd(0, q + i * 4, 0, 0).get();
         intar[i] = resp.payload; 
@@ -34,7 +34,7 @@ std::vector<int> golden_fir(const std::vector<int> &in, const std::vector<int> &
     std::deque<int> window;
     for (const auto &i: in) {
         int sum = 0;
-        printf("%d\n", i);
+        // printf("%d\n", i);
         window.push_front(i);
         for (int i = 0; i < taps.size() && i < window.size(); ++i) {
             sum += taps[i] * window[i];
@@ -54,7 +54,7 @@ int main() {
         auto tap_value = i + 5;
         taps.push_back(tap_value);
         FIR::set_taps(0, i, tap_value);
-        printf("TAP[%d] = %d\n", i, tap_value);
+        // printf("TAP[%d] = %d\n", i, tap_value);
     }
     
     auto fpga_in = handle.malloc(sizeof(int) * data_vector_length);
@@ -65,13 +65,12 @@ int main() {
         fpga_in_host[i] = data;
         input.push_back(data);
     }
-    // in simulation, this is fine
-    handle.copy_to_fpga(fpga_in);
+    dma_workaround_copy_to_fpga(fpga_in);
 
     auto fpga_out = handle.malloc(sizeof(int) * data_vector_length);
     FIR::do_filter(0, fpga_in, data_vector_length, fpga_out).get();
-
     auto golden_out = golden_fir(input, taps);
+    dma_workaround_copy_from_fpga(fpga_out);
     auto fpga_out_host = (int*)fpga_out.getHostAddr();
     bool success = true;
     for (int i = 0; i < data_vector_length; ++i) {

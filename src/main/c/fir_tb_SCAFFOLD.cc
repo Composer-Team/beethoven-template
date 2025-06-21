@@ -1,3 +1,4 @@
+/*
 #include <beethoven/fpga_handle.h>
 #include <beethoven_hardware.h>
 #include <vector>
@@ -66,24 +67,39 @@ int main() {
         printf("TAP[%d] = %d\n", i, tap_value);
     }
     
-    ///// Use the FIR set_tap command you made to send over the tap value /////
+    ///// Allocate memory segments /////
     // TODO
-    auto fpga_in = handle.malloc(sizeof(int) * data_vector_length);
-    auto fpga_in_host = (int*)fpga_in.getHostAddr();
+    // remote_ptr fpga_in = ...
+    // remote_ptr fpga_out = ...
+
+    // TODO
+    // extract the host pointer from the fpga_in remote_ptr
+    int * fpga_in_host;
+
     std::vector<int> input;
     for (int i = 0; i < data_vector_length; ++i) {
         int data = i * 2 + 1;
-        fpga_in_host[i] = data;
         input.push_back(data);
+        // TODO
+        // Use fpga_in_host to write to the FPGA-accessible segment
     }
-    // in simulation, this is fine
-    handle.copy_to_fpga(fpga_in);
+    // in simulation, we can use the following to copy large segments to memory quickly
+    // handle.copy_to_fpga(fpga_in);
+    // 
+    // For the time being, we have to use a workaround for memory transfer on the F2 instances
+    // **** TODO Uncomment Below ****
+    // dma_workaround_copy_to_fpga(fpga_in);
 
-    auto fpga_out = handle.malloc(sizeof(int) * data_vector_length);
-    FIR::do_filter(0, fpga_in, data_vector_length, fpga_out).get();
-
+    // Call the FIR Filter accelerator
+    // TODO
+    
     auto golden_out = golden_fir(input, taps);
-    auto fpga_out_host = (int*)fpga_out.getHostAddr();
+    // Transfer the FPGA segment back to host memory
+    // dma_workaround...
+
+    // Extract the host pointer from fpga_out
+    // int* fpga_out_host = ...
+
     bool success = true;
     for (int i = 0; i < data_vector_length; ++i) {
         if (golden_out[i] != fpga_out_host[i]) {
@@ -95,3 +111,4 @@ int main() {
         printf("Success!\n");
     }
 }
+    */

@@ -49,7 +49,7 @@ class FirFilterScaffold(window: Int)(implicit p: Parameters) extends Accelerator
             We'll need three things: 
             1. Input Pointer
             2. Output Pointer
-            3. The length of the vector we'll be streamig in from memory
+            3. The length of the vector we'll be streaming in from memory
             */
     }, new EmptyAccelResponse)
 
