@@ -29,4 +29,4 @@ RUN chown beethoven:beethoven /home/beethoven/.ssh
 
 # RUN apt-get install procmail
 USER beethoven
-
+ENV LD_LIBRARY_PATH=/usr/local/lib
