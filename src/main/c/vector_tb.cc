@@ -19,11 +19,18 @@ int main() {
   }
   handle.copy_to_fpga(vec_a);
   handle.copy_to_fpga(vec_b);
-  auto resp_handle = myVectorAdd::vector_add(0,
-                                             vec_a,
-                                             vec_b,
-                                             vec_out,
-                                             n_eles);
-  auto response = resp_handle.get();
+  myVectorAdd::vector_add(0,
+                          vec_a,
+                          vec_b,
+                          vec_out,
+                          n_eles).get();
+
   handle.copy_from_fpga(vec_out);
+  
+  auto output = (int*)vec_out.getHostAddr();
+  for (int i = 0; i < n_eles; ++i) {
+    if (output[i] != (i+1) + (i*2)) {
+      printf("Err on %d: %d =/= %d\n", i, output[i], (i+1)+(i*2));
+    }
+  }
 }

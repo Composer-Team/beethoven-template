@@ -71,7 +71,7 @@ class VectorAddCore()(implicit p: Parameters) extends AcceleratorCore {
       state := s_finish
     }
   }.otherwise {
-    my_io.resp.valid := true.B
+    my_io.resp.valid := vec_out_writer.requestChannel.ready
     when (my_io.resp.fire) {
       state := s_idle
     }
