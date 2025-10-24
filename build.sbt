@@ -6,16 +6,20 @@ ThisBuild / version := "0.0.0"
 
 val chiselVersion = "3.5.6"
 
+lazy val beethoven = RootProject(file("../Beethoven-Hardware"))
+
+
 lazy val root = {
   (project in file("."))
     .settings(
       name := "project-name",
       libraryDependencies ++= Seq(
         "edu.berkeley.cs" %% "chisel3" % chiselVersion,
-        "edu.duke.cs.apex" %% "beethoven-hardware" % "0.0.34"
+        // "edu.duke.cs.apex" %% "beethoven-hardware" % "0.0.34"
       ),
       // we're currently hosting a maven server on an AWS instance, prior to official release on a global repository
       resolvers += ("reposilite-repository-releases" at "http://54.165.244.214:8080/releases").withAllowInsecureProtocol(true),
       addCompilerPlugin("edu.berkeley.cs" % "chisel3-plugin" % chiselVersion cross CrossVersion.full),
     )
+    .dependsOn(beethoven)
 }

@@ -23,10 +23,10 @@ class VectorAddConfig extends AcceleratorConfig(
   // During the transition from AWS F1 -> F2 instances, some of the AWS infra
   // is lagging behind, requiring these work-arounds. These are not needed for
   // simulation, ASIC, or Kria FPGA targets
-  new DMAHelperConfig, new MemsetHelperConfig(4)
+  //new DMAHelperConfig, new MemsetHelperConfig(4)
   //////////////////////////////
   ))
 
 object VectorAddConfig extends BeethovenBuild(new VectorAddConfig,
-  buildMode = BuildMode.Simulation,
-  platform = new AWSF2Platform("beethoven-user0"))
+  buildMode = BuildMode.Synthesis,
+  platform = new AUPZU3Platform(8))
