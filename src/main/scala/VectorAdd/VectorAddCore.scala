@@ -5,7 +5,7 @@ import chisel3._
 import chisel3.util._
 import beethoven._
 import beethoven.common._
-import chipsalliance.rocketchip.config.Parameters
+import org.chipsalliance.cde.config.{Config, Parameters}
 
 //noinspection TypeAnnotation,ScalaWeakerAccess
 class VectorAddCore()(implicit p: Parameters) extends AcceleratorCore {
