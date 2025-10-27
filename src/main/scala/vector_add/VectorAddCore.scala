@@ -1,11 +1,11 @@
-package VectorAdd
+package vector_add
 
 
 import chisel3._
 import chisel3.util._
 import beethoven._
 import beethoven.common._
-import chipsalliance.rocketchip.config.Parameters
+import org.chipsalliance.cde.config.Parameters
 
 //noinspection TypeAnnotation,ScalaWeakerAccess
 class VectorAddCore()(implicit p: Parameters) extends AcceleratorCore {

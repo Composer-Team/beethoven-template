@@ -1,4 +1,4 @@
-package VectorAdd
+package vector_add
 
 
 import beethoven._

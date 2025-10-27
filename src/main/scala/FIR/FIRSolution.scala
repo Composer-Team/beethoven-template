@@ -1,9 +1,9 @@
-package FIR
+package fir
 
 import beethoven._
 import beethoven.common._
 import chisel3._
-import chipsalliance.rocketchip.config.Parameters
+import org.chipsalliance.cde.config.Parameters
 import chisel3.util._
 import dataclass.data
 import beethoven.Platforms.FPGA.Xilinx.AWS.AWSF2Platform
