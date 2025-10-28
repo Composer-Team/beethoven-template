@@ -16,3 +16,4 @@ src/main/c/build
 sed_script.sed
 src/main/c/Beethoven-Software
 *.o
+src/test/c/Beethoven-Software
