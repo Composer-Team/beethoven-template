@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <beethoven/fpga_handle.h>
 #include <beethoven_hardware.h>
+#include <mmio.h>
 
 using namespace beethoven;
 
@@ -12,6 +13,20 @@ int main() {
 
   fpga_handle_t handle;
   std::cout << "[INIT] FPGA handle created successfully" << std::endl;
+
+  // Configure AXI CACHE and PROT bits for cache coherency
+  // Format: bits [6:3] = CACHE, bits [2:0] = PROT
+  // Try different values to fix coherency issues:
+  //   0x02 = Non-cacheable (CACHE=0000, PROT=010) - safest, slowest
+  //   0x0A = Bufferable but non-cacheable (CACHE=0001, PROT=010)
+  //   0x7A = Default - fully cacheable (CACHE=1111, PROT=010) - may have coherency issues
+  uint32_t cache_prot_value = 0x02;  // Start with non-cacheable
+  std::cout << "[CONFIG] Setting CACHEPROT register to 0x" << std::hex << cache_prot_value << std::dec << std::endl;
+  poke_mmio(CACHEPROT, cache_prot_value);
+
+  // Verify the write
+  uint32_t readback = peek_mmio(CACHEPROT);
+  std::cout << "[CONFIG] CACHEPROT readback: 0x" << std::hex << readback << std::dec << std::endl;
 
   int size_of_int = 4;
   int n_eles = 32;
