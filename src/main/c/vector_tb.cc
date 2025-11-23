@@ -106,6 +106,17 @@ int main() {
       vec_b_host[i] = i * 2;
   }
 
+  // Manual cache flush - force data to RAM
+  std::cout << "[CACHE] Flushing CPU cache to RAM..." << std::endl;
+  __sync_synchronize();  // Memory barrier
+  asm volatile("dc civac, %0" : : "r"(vec_a_host) : "memory");
+  asm volatile("dc civac, %0" : : "r"(vec_b_host) : "memory");
+  for (int i = 0; i < n_eles * 4; i += 64) {  // Flush every cache line (64 bytes)
+    asm volatile("dc civac, %0" : : "r"((char*)vec_a_host + i) : "memory");
+    asm volatile("dc civac, %0" : : "r"((char*)vec_b_host + i) : "memory");
+  }
+  std::cout << "[CACHE] Cache flushed successfully" << std::endl;
+
   std::cout << "[DATA] Sample input values (first 8 elements):" << std::endl;
   std::cout << "  Index | vec_a | vec_b | expected_sum" << std::endl;
   std::cout << "  ------|-------|-------|-------------" << std::endl;
@@ -144,6 +155,14 @@ int main() {
                           vec_out,
                           n_eles).get();
   std::cout << "[ACCEL] Accelerator completed successfully" << std::endl;
+
+  // Manual cache invalidate - force re-read from RAM
+  std::cout << "\n[CACHE] Invalidating CPU cache for vec_out..." << std::endl;
+  __sync_synchronize();
+  for (int i = 0; i < n_eles * 4; i += 64) {  // Invalidate every cache line (64 bytes)
+    asm volatile("dc civac, %0" : : "r"((char*)vec_out.getHostAddr() + i) : "memory");
+  }
+  std::cout << "[CACHE] Cache invalidated successfully" << std::endl;
 
   // Debug: Check vec_out before copy
   auto output_before = (int*)vec_out.getHostAddr();
