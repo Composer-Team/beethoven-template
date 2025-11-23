@@ -67,7 +67,10 @@ int main() {
   //   0x02 = Non-cacheable (CACHE=0000, PROT=010) - safest, slowest
   //   0x0A = Bufferable but non-cacheable (CACHE=0001, PROT=010)
   //   0x7A = Default - fully cacheable (CACHE=1111, PROT=010) - may have coherency issues
+  // NOTE: This requires hardware rebuild with hasDebugAXICACHEPROT=true
   uint32_t cache_prot_value = 0x02;  // Start with non-cacheable
+  bool skip_copies = true;  // Set to true to test cache coherency without copy operations
+  std::cout << "[CONFIG] Skip DMA copies: " << (skip_copies ? "YES (testing coherency)" : "NO") << std::endl;
   std::cout << "[CONFIG] Setting CACHEPROT register to 0x" << std::hex << cache_prot_value << std::dec << std::endl;
   write_cacheprot(cache_prot_value);
 
@@ -116,13 +119,17 @@ int main() {
       std::cout << "  ... (" << (n_eles - 8) << " more elements)" << std::endl;
   }
 
-  std::cout << "\n[COPY] Copying vec_a to FPGA..." << std::endl;
-  handle.copy_to_fpga(vec_a);
-  std::cout << "[COPY] vec_a copied successfully" << std::endl;
+  if (skip_copies) {
+    std::cout << "\n[SKIP] Skipping copy_to_fpga (testing cache coherency)..." << std::endl;
+  } else {
+    std::cout << "\n[COPY] Copying vec_a to FPGA..." << std::endl;
+    handle.copy_to_fpga(vec_a);
+    std::cout << "[COPY] vec_a copied successfully" << std::endl;
 
-  std::cout << "[COPY] Copying vec_b to FPGA..." << std::endl;
-  handle.copy_to_fpga(vec_b);
-  std::cout << "[COPY] vec_b copied successfully" << std::endl;
+    std::cout << "[COPY] Copying vec_b to FPGA..." << std::endl;
+    handle.copy_to_fpga(vec_b);
+    std::cout << "[COPY] vec_b copied successfully" << std::endl;
+  }
 
   std::cout << "\n[ACCEL] Launching vector_add accelerator..." << std::endl;
   std::cout << "  Core ID: 0" << std::endl;
@@ -138,9 +145,22 @@ int main() {
                           n_eles).get();
   std::cout << "[ACCEL] Accelerator completed successfully" << std::endl;
 
-  std::cout << "\n[COPY] Copying vec_out from FPGA..." << std::endl;
-  handle.copy_from_fpga(vec_out);
-  std::cout << "[COPY] vec_out copied successfully" << std::endl;
+  // Debug: Check vec_out before copy
+  auto output_before = (int*)vec_out.getHostAddr();
+  std::cout << "\n[DEBUG] vec_out[0] before copy: " << output_before[0] << std::endl;
+  std::cout << "[DEBUG] vec_out[16] before copy: " << output_before[16] << std::endl;
+
+  if (skip_copies) {
+    std::cout << "\n[SKIP] Skipping copy_from_fpga (testing cache coherency)..." << std::endl;
+  } else {
+    std::cout << "\n[COPY] Copying vec_out from FPGA..." << std::endl;
+    handle.copy_from_fpga(vec_out);
+    std::cout << "[COPY] vec_out copied successfully" << std::endl;
+  }
+
+  // Debug: Check vec_out after copy
+  std::cout << "[DEBUG] vec_out[0] after copy/skip: " << output_before[0] << std::endl;
+  std::cout << "[DEBUG] vec_out[16] after copy/skip: " << output_before[16] << std::endl;
 
   std::cout << "\n[VERIFY] Checking results..." << std::endl;
   auto output = (int*)vec_out.getHostAddr();
