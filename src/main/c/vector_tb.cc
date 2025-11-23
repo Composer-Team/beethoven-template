@@ -2,14 +2,61 @@
 #include <iomanip>
 #include <beethoven/fpga_handle.h>
 #include <beethoven_hardware.h>
-#include <mmio.h>
+#include <sys/mman.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <cstring>
 
 using namespace beethoven;
+
+// Direct MMIO access functions
+volatile uint32_t* mmio_base = nullptr;
+
+void setup_cacheprot_mmio() {
+  int fd = open("/dev/mem", O_SYNC | O_RDWR);
+  if (fd < 0) {
+    std::cerr << "Error opening /dev/mem: " << strerror(errno) << std::endl;
+    std::cerr << "Make sure you run with sudo or have appropriate permissions" << std::endl;
+    exit(1);
+  }
+
+  void* mapped = mmap(nullptr, 0x1000, PROT_READ | PROT_WRITE,
+                      MAP_SHARED, fd, BeethovenMMIOOffset);
+  if (mapped == MAP_FAILED) {
+    std::cerr << "Failed to mmap MMIO region: " << strerror(errno) << std::endl;
+    close(fd);
+    exit(1);
+  }
+
+  mmio_base = (volatile uint32_t*)mapped;
+  close(fd);  // Can close fd after mmap
+}
+
+void write_cacheprot(uint32_t value) {
+  if (mmio_base == nullptr) {
+    std::cerr << "MMIO not initialized!" << std::endl;
+    return;
+  }
+  mmio_base[CACHEPROT / 4] = value;  // Divide by 4 for uint32_t indexing
+}
+
+uint32_t read_cacheprot() {
+  if (mmio_base == nullptr) {
+    std::cerr << "MMIO not initialized!" << std::endl;
+    return 0;
+  }
+  return mmio_base[CACHEPROT / 4];
+}
 
 int main() {
   std::cout << "========================================" << std::endl;
   std::cout << "Vector Add Testbench - Debug Mode" << std::endl;
   std::cout << "========================================" << std::endl;
+
+  // Setup MMIO access for CACHEPROT register
+  std::cout << "[INIT] Setting up MMIO access..." << std::endl;
+  setup_cacheprot_mmio();
+  std::cout << "[INIT] MMIO access configured" << std::endl;
 
   fpga_handle_t handle;
   std::cout << "[INIT] FPGA handle created successfully" << std::endl;
@@ -22,10 +69,10 @@ int main() {
   //   0x7A = Default - fully cacheable (CACHE=1111, PROT=010) - may have coherency issues
   uint32_t cache_prot_value = 0x02;  // Start with non-cacheable
   std::cout << "[CONFIG] Setting CACHEPROT register to 0x" << std::hex << cache_prot_value << std::dec << std::endl;
-  poke_mmio(CACHEPROT, cache_prot_value);
+  write_cacheprot(cache_prot_value);
 
   // Verify the write
-  uint32_t readback = peek_mmio(CACHEPROT);
+  uint32_t readback = read_cacheprot();
   std::cout << "[CONFIG] CACHEPROT readback: 0x" << std::hex << readback << std::dec << std::endl;
 
   int size_of_int = 4;
