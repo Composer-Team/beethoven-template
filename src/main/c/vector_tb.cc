@@ -73,7 +73,7 @@ int main() {
   bool skip_copies = false;  // Set to true to test cache coherency without copy operations
   std::cout << "[CONFIG] Skip DMA copies: " << (skip_copies ? "YES (testing coherency)" : "NO") << std::endl;
   std::cout << "[CONFIG] Setting CACHEPROT register to 0x" << std::hex << cache_prot_value << std::dec << std::endl;
-  write_cacheprot(cache_prot_value);
+  // write_cacheprot(cache_prot_value);
 
   // Verify the write
   uint32_t readback = read_cacheprot();
@@ -108,10 +108,10 @@ int main() {
   }
 
   // Flush CPU cache to RAM so FPGA can read the data
-  cache_flush_buffers({
-      {vec_a_host, size_of_int * n_eles},
-      {vec_b_host, size_of_int * n_eles}
-  }, true);
+  // arm_dcache_flush_multi({
+  //     {vec_a_host, size_of_int * n_eles},
+  //     {vec_b_host, size_of_int * n_eles}
+  // }, true);
 
   std::cout << "[DATA] Sample input values (first 8 elements):" << std::endl;
   std::cout << "  Index | vec_a | vec_b | expected_sum" << std::endl;
@@ -153,7 +153,7 @@ int main() {
   std::cout << "[ACCEL] Accelerator completed successfully" << std::endl;
 
   // Invalidate CPU cache to force re-read from RAM after FPGA writes
-  cache_invalidate_from_ram(vec_out.getHostAddr(), size_of_int * n_eles, true);
+  // arm_dcache_invalidate(vec_out.getHostAddr(), size_of_int * n_eles, true);
 
   // Debug: Check vec_out before copy
   auto output_before = (int*)vec_out.getHostAddr();
