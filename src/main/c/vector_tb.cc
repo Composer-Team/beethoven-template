@@ -6,6 +6,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstring>
+#include "cache_utils.h"
 
 using namespace beethoven;
 
@@ -106,16 +107,11 @@ int main() {
       vec_b_host[i] = i * 2;
   }
 
-  // Manual cache flush - force data to RAM
-  std::cout << "[CACHE] Flushing CPU cache to RAM..." << std::endl;
-  __sync_synchronize();  // Memory barrier
-  asm volatile("dc civac, %0" : : "r"(vec_a_host) : "memory");
-  asm volatile("dc civac, %0" : : "r"(vec_b_host) : "memory");
-  for (int i = 0; i < n_eles * 4; i += 64) {  // Flush every cache line (64 bytes)
-    asm volatile("dc civac, %0" : : "r"((char*)vec_a_host + i) : "memory");
-    asm volatile("dc civac, %0" : : "r"((char*)vec_b_host + i) : "memory");
-  }
-  std::cout << "[CACHE] Cache flushed successfully" << std::endl;
+  // Flush CPU cache to RAM so FPGA can read the data
+  cache_flush_buffers({
+      {vec_a_host, size_of_int * n_eles},
+      {vec_b_host, size_of_int * n_eles}
+  }, true);
 
   std::cout << "[DATA] Sample input values (first 8 elements):" << std::endl;
   std::cout << "  Index | vec_a | vec_b | expected_sum" << std::endl;
@@ -156,13 +152,8 @@ int main() {
                           n_eles).get();
   std::cout << "[ACCEL] Accelerator completed successfully" << std::endl;
 
-  // Manual cache invalidate - force re-read from RAM
-  std::cout << "\n[CACHE] Invalidating CPU cache for vec_out..." << std::endl;
-  __sync_synchronize();
-  for (int i = 0; i < n_eles * 4; i += 64) {  // Invalidate every cache line (64 bytes)
-    asm volatile("dc civac, %0" : : "r"((char*)vec_out.getHostAddr() + i) : "memory");
-  }
-  std::cout << "[CACHE] Cache invalidated successfully" << std::endl;
+  // Invalidate CPU cache to force re-read from RAM after FPGA writes
+  cache_invalidate_from_ram(vec_out.getHostAddr(), size_of_int * n_eles, true);
 
   // Debug: Check vec_out before copy
   auto output_before = (int*)vec_out.getHostAddr();
