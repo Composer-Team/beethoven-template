@@ -68,8 +68,8 @@ int main() {
   //   0x0A = Bufferable but non-cacheable (CACHE=0001, PROT=010)
   //   0x7A = Default - fully cacheable (CACHE=1111, PROT=010) - may have coherency issues
   // NOTE: This requires hardware rebuild with hasDebugAXICACHEPROT=true
-  uint32_t cache_prot_value = 0x02;  // Start with non-cacheable
-  bool skip_copies = true;  // Set to true to test cache coherency without copy operations
+  uint32_t cache_prot_value = 0x7A;  // Start with non-cacheable
+  bool skip_copies = false;  // Set to true to test cache coherency without copy operations
   std::cout << "[CONFIG] Skip DMA copies: " << (skip_copies ? "YES (testing coherency)" : "NO") << std::endl;
   std::cout << "[CONFIG] Setting CACHEPROT register to 0x" << std::hex << cache_prot_value << std::dec << std::endl;
   write_cacheprot(cache_prot_value);
