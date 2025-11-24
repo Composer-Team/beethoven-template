@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <cstring>
-#include "cache_utils.h"
 
 using namespace beethoven;
 
@@ -107,12 +106,6 @@ int main() {
       vec_b_host[i] = i * 2;
   }
 
-  // Flush CPU cache to RAM so FPGA can read the data
-  // arm_dcache_flush_multi({
-  //     {vec_a_host, size_of_int * n_eles},
-  //     {vec_b_host, size_of_int * n_eles}
-  // }, true);
-
   std::cout << "[DATA] Sample input values (first 8 elements):" << std::endl;
   std::cout << "  Index | vec_a | vec_b | expected_sum" << std::endl;
   std::cout << "  ------|-------|-------|-------------" << std::endl;
@@ -151,9 +144,6 @@ int main() {
                           vec_out,
                           n_eles).get();
   std::cout << "[ACCEL] Accelerator completed successfully" << std::endl;
-
-  // Invalidate CPU cache to force re-read from RAM after FPGA writes
-  // arm_dcache_invalidate(vec_out.getHostAddr(), size_of_int * n_eles, true);
 
   // Debug: Check vec_out before copy
   auto output_before = (int*)vec_out.getHostAddr();
