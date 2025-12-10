@@ -46,7 +46,7 @@ class SystolicArrayCore(dim: Int)(implicit p: Parameters) extends AcceleratorCor
 
   val sa = Module(new SystolicArray())
   val sa_idle = sa.io.ctrl_start_ready
-
+  
   sa.io.act_in /* := ??? */
   activations.data.ready /* := ??? */
   sa.io.act_valid /* := ??? */

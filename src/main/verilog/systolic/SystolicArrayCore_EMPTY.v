@@ -39,27 +39,46 @@ module SystolicArrayCore #(parameter SYSTOLIC_ARRAY_DIM, DATA_WIDTH_BITS, INT_BI
 
 wire cmd_fire = cmd_matmul_valid && cmd_matmul_ready;
 
-assign vec_out_req_valid = cmd_fire;
-assign vec_out_req_len = (SYSTOLIC_ARRAY_DIM * SYSTOLIC_ARRAY_DIM * (DATA_WIDTH_BITS / 8));
-assign vec_out_req_addr_address = cmd_matmul_out_addr;
+assign vec_out_req_valid = ???;
+// length of output transaction in bytes
+assign vec_out_req_len = ???;
+// address of the output matrix
+assign vec_out_req_addr_address = ???;
 
-assign weights_req_valid = cmd_fire;
-assign weights_req_len = (DATA_WIDTH_BITS / 8) * SYSTOLIC_ARRAY_DIM * cmd_matmul_inner_dimension;
-assign weights_req_addr_address = cmd_matmul_wgt_addr;
+assign weights_req_valid = ???;
+assign weights_req_len = ???;
+assign weights_req_addr_address = ???;
 
-assign activations_req_valid = cmd_fire;
-assign activations_req_len = (DATA_WIDTH_BITS / 8) * SYSTOLIC_ARRAY_DIM * cmd_matmul_inner_dimension;
-assign activations_req_addr_address = cmd_matmul_act_addr;
+assign activations_req_valid = ???;
+assign activations_req_len = ???;
+assign activations_req_addr_address = ???;
+
+// state machine
+// IDLE
+//    The systolic array is idle and waiting for a command from the host
+//
+//    Once cmd_fire is high, we launch memory transactions, launch the systolic array,
+//    and move to "GO" state
+//
+// GO
+//    The systolic array should now be running on its own, streaming from the memory
+//    interfaces when appropriate, and then, once its complete, writing everything out
+//    to memory.
+//
+//    Once the systolic array notifies us that it is once again idle and the write streams
+//    have cohered everything to external memory, then we can notify the host that we are done
+//    by transition to RESPONSE and driving the response interface
+//
+// RESPONSE
+//    We drive response valid high and transition back to IDLE once this handshake is complete
 
 `define IDLE 0
 `define GO 1
 `define RESPONSE 2
 reg [1:0] state;
-assign cmd_matmul_ready = state == `IDLE 
-        && weights_req_ready 
-        && activations_req_ready 
-        && vec_out_req_ready;
-assign resp_matmul_valid = state == `RESPONSE;
+
+assign cmd_matmul_ready = ???;
+assign resp_matmul_valid = ???;
 
 wire sa_idle;
 
@@ -67,21 +86,21 @@ SystolicArray #(.DATA_WIDTH_BITS(DATA_WIDTH_BITS), .FRAC_BITS(FRAC_BITS), .INT_B
   .clk(clock),
   .rst(areset),
 
-  .act_in(activations_data),
-  .act_valid(activations_data_valid),
-  .act_ready(activations_data_ready),
+  .act_in(),
+  .act_valid(),
+  .act_ready(),
 
-  .wgt_in(weights_data),
-  .wgt_valid(weights_data_valid),
-  .wgt_ready(weights_data_ready),
+  .wgt_in(),
+  .wgt_valid(),
+  .wgt_ready(),
 
-  .accumulator_out(vec_out_data),
-  .accumulator_out_valid(vec_out_data_valid),
-  .accumulator_out_ready(vec_out_data_ready),
+  .accumulator_out(),
+  .accumulator_out_valid(),
+  .accumulator_out_ready(),
 
-  .ctrl_start_matmul(cmd_fire),
+  .ctrl_start_matmul(),
   .ctrl_start_ready(sa_idle),
-  .ctrl_inner_dimension(cmd_matmul_inner_dimension)
+  .ctrl_inner_dimension()
 );
 
 always @(posedge clock) begin
@@ -89,17 +108,8 @@ always @(posedge clock) begin
     state <= `IDLE;
   end else begin
     if (state == `IDLE) begin
-      if (cmd_fire) begin
-        state <= `GO;
-      end
     end else if (state == `GO) begin
-      if (sa_idle && vec_out_req_ready && vec_out_isFlushed) begin
-        state <= `RESPONSE;
-      end
     end else if (state == `RESPONSE) begin
-      if (resp_matmul_ready) begin
-        state <= `IDLE;
-      end
     end
   end
 end

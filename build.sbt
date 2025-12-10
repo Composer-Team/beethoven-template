@@ -12,7 +12,7 @@ lazy val root = {
       name := "project-name",
       libraryDependencies ++= Seq(
         "org.chipsalliance" %% "chisel" % chiselVersion,
-        "edu.duke.cs.apex" %% "beethoven-hardware" % "0.1.5"
+        "edu.duke.cs.apex" %% "beethoven-hardware" % "0.1.6"
       ),
       // we're currently hosting a maven server on an AWS instance, prior to official release on a global repository
       resolvers += ("reposilite-repository-releases" at "http://54.165.244.214:8080/releases").withAllowInsecureProtocol(true),

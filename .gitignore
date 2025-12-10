@@ -17,3 +17,5 @@ sed_script.sed
 src/main/c/Beethoven-Software
 *.o
 src/test/c/Beethoven-Software
+build/
+.DS_Store

@@ -68,7 +68,7 @@ object SystolicArrayConfig_SOLUTION
           )
         )
 
-        new SystolicArrayConfig(1)
+        new SystolicArrayConfig_SOLUTION(1)
       },
       platform = new AWSF2Platform,
       buildMode = BuildMode.Simulation
