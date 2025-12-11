@@ -25,13 +25,10 @@ int main() {
   // this testbench relies on uint16_t...
   assert(DATA_WIDTH_BYTES == 2);
 
-  // allocate memory for the accelerator
-  auto activations =
-      handle.malloc(sizeof(int16_t) * SYSTOLIC_ARRAY_DIM * inner_dimension);
-  auto weights =
-      handle.malloc(sizeof(int16_t) * SYSTOLIC_ARRAY_DIM * inner_dimension);
-  auto outputs =
-      handle.malloc(sizeof(int16_t) * SYSTOLIC_ARRAY_DIM * SYSTOLIC_ARRAY_DIM);
+  // allocate memory for the accelerator 
+  // auto activations = ???;
+  // auto weights = ???;
+  // auto outputs = ???;
 
   // random number generation
   std::random_device rd;
@@ -39,9 +36,9 @@ int main() {
   std::default_random_engine eng(rd());
 
   // get host pointers out of the memory handles
-  int16_t *host_act = (int16_t *)activations.getHostAddr(),
-          *host_wgt = (int16_t *)weights.getHostAddr(),
-          *host_out = (int16_t *)outputs.getHostAddr();
+  // int16_t *host_act = ???,
+  //         *host_wgt = ???,
+  //         *host_out = ???;
 
   // allocate arrays for golden model
   float *gold_act = new float[inner_dimension * SYSTOLIC_ARRAY_DIM];
@@ -60,14 +57,16 @@ int main() {
   // store in the typical (row-major) fashion and transpose the matrix in
   // memory. This would make this explanatory example more complicated than it
   // needs to be so we're transposing in-place for the C++ golden-model.
-  for (int i = 0; i < inner_dimension; ++i) {
-    for (int j = 0; j < SYSTOLIC_ARRAY_DIM; ++j) {
-      host_act[i * SYSTOLIC_ARRAY_DIM + j] =
-          fp_to_fixp(gold_act[i * SYSTOLIC_ARRAY_DIM + j] = dist(eng));
-      host_wgt[i * SYSTOLIC_ARRAY_DIM + j] =
-          fp_to_fixp(gold_wgt[i * SYSTOLIC_ARRAY_DIM + j] = dist(eng));
-    }
-  }
+
+  // UNCOMMENT THIS WHEN YOU HAVE THE POINTER ALLOCATION IMPLEMENTED
+  // for (int i = 0; i < inner_dimension; ++i) {
+  //   for (int j = 0; j < SYSTOLIC_ARRAY_DIM; ++j) {
+  //     host_act[i * SYSTOLIC_ARRAY_DIM + j] =
+  //         fp_to_fixp(gold_act[i * SYSTOLIC_ARRAY_DIM + j] = dist(eng));
+  //     host_wgt[i * SYSTOLIC_ARRAY_DIM + j] =
+  //         fp_to_fixp(gold_wgt[i * SYSTOLIC_ARRAY_DIM + j] = dist(eng));
+  //   }
+  // }
 
   // perform golden-model matrix multiply
   memset(gold_out, 0, sizeof(float) * SYSTOLIC_ARRAY_DIM * SYSTOLIC_ARRAY_DIM);
@@ -83,24 +82,23 @@ int main() {
 
   // move the data over to the accelerator - in simulation/embedded platforms,
   // this is a NOOP, for PCIE-mounted FPGAs, this triggers DMA
-  handle.copy_to_fpga(activations);
-  handle.copy_to_fpga(weights);
+  // ??? activations;
+  // ??? weights;
 
   // execute the command on the accelerator
-  SystolicArrayCore::matmul(0, activations.getFpgaAddr(), inner_dimension,
-                            outputs.getFpgaAddr(), weights.getFpgaAddr())
-      .get();
+  // ???
 
   // move the data back from the accelerator
-  handle.copy_from_fpga(outputs);
+  // ??? outputs;
 
   // print out the outputs from the accelerator
-  for (int i = 0; i < SYSTOLIC_ARRAY_DIM; ++i) {
-    for (int j = 0; j < SYSTOLIC_ARRAY_DIM; ++j) {
-      printf("%0.2f ", fixp_to_fp(host_out[i * SYSTOLIC_ARRAY_DIM + j]));
-    }
-    printf("\n");
-  }
+  // UNCOMMENT ME WHEN POINTERS ARE IMPLEMENTED
+  // for (int i = 0; i < SYSTOLIC_ARRAY_DIM; ++i) {
+  //   for (int j = 0; j < SYSTOLIC_ARRAY_DIM; ++j) {
+  //     printf("%0.2f ", fixp_to_fp(host_out[i * SYSTOLIC_ARRAY_DIM + j]));
+  //   }
+  //   printf("\n");
+  // }
 
   // print out the golden model (transpose)
   // because the accelerator outputs the matrix transpose (useful for re-using
